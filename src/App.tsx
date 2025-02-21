@@ -9,38 +9,40 @@ interface Todo {
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState<string>('');
-
-
-
   const addTodo = () => {
-   
   };
-
- 
-
   const deleteTodo = (_id: number) => {
    
   };
-
-  
 
 const fetchAllData = async () => {
   const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks/all');
   if(response.status !== 200) {
     throw new Error('can not fetch that data now');
   }
-
   const data = await response.json();
   setTodos(data.tasks)
-  // console.log(data.tasks)
- 
 }
-
 useEffect(() => {
   fetchAllData()
 }, [])
-
 console.log('todos', todos)
+
+
+const AddData = async () => {
+  const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks');
+  if(response.status !== 200) {
+    throw new Error('can not add that data now');
+  }
+  const data = await response.json();
+  setTodos(data.tasks)
+}
+
+useEffect(() => {
+  AddData()
+}, [])
+
+// console.log('todos', todos)
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-600">
@@ -49,16 +51,14 @@ console.log('todos', todos)
 
         <div className="mb-4 flex-row gap-6 mt-10">
         <input
-            
             type="text"
             className="flex-2 px-4 mt-4 py-2 border border-gray-300 rounded-l-md"
-            
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder="add a note...... !"
           />
           <button
-            onClick={addTodo}
+            // onClick={() => addTodo(todos)}
             className="px-4 py-2 text-4xl text-white rounded-r-md hover:bg-gray-600"
           >
             <IoIosAddCircle className="font-extrabold h-6"/>
