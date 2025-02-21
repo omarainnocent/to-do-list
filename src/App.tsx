@@ -1,64 +1,46 @@
 import { IoIosAddCircle } from "react-icons/io";
 import { FaDeleteLeft} from "react-icons/fa6";
-import { useState } from 'react';
-import { FaEdit } from "react-icons/fa";
+import {  useEffect, useState } from 'react';
 interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
+  _id: number;
+  title: string;
 }
 
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState<string>('');
-  const [edit, setEditingText] = useState('')
 
 
-  const EditHandler = (e) => {
-    setEditingText(e.target.value)
-    console.log(e.target.value)
-  }
-
-  const SubmitEdit = (id) => {
-        setTodos([...todo]. map((todos) => {
-          if(todos.id === id) {
-            todos.text = edittext
-          }
-          return todos
-        }))
-
-        setEditingText(null)
-        setEditingText("")
-  }
 
   const addTodo = () => {
-    if (newTodo.trim() !== '') {
-      const newTodoItem: Todo = {
-        id: Date.now(),
-        text: newTodo,
-        completed: false,
-      };
-      setTodos((prevTodos) => [...prevTodos, newTodoItem]);
-      setNewTodo('');
-    }
+   
   };
 
-  const toggleComplete = (id: number) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
+ 
 
-  const deleteTodo = (id: number) => {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  const deleteTodo = (_id: number) => {
+   
   };
 
   
 
+const fetchAllData = async () => {
+  const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks/all');
+  if(response.status !== 200) {
+    throw new Error('can not fetch that data now');
+  }
 
-  
+  const data = await response.json();
+  setTodos(data.tasks)
+  // console.log(data.tasks)
+ 
+}
+
+useEffect(() => {
+  fetchAllData()
+}, [])
+
+console.log('todos', todos)
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-600">
@@ -88,29 +70,19 @@ export default function App() {
         <ul className="space-y-4 md:flex-col-2">
           {todos.map((todo) => (
             <li
-              key={todo.id}
-              className={`flex justify-between items-center p-4 border rounded-md ${
-                todo.completed ? 'bg-green-100 line-through' : 'bg-gray-400'
-              }`}
+              key={todo._id}
+              className={`flex justify-between items-center p-4 border rounded-md `}
             >
               <span
-                className="flex-1 cursor-pointer"
-                onClick={() => toggleComplete(todo.id)}
+                className="flex-1 cursor-pointer text-white"
               >
-                {todo.text}
+                {todo.title}
               </span>
               <button
-                onClick={() => deleteTodo(todo.id)}
+                onClick={() => deleteTodo(todo._id)}
                 className="ml-2 text-red-600 hover:text-red-800"
               >
                 <FaDeleteLeft className="text-red-600 text-2xl"/>
-              </button>
-              {/* onClick={() => editTodos(todos.id)} */}
-              <button
-              className=""
-              onClick={() => setEditingText(todos.id)}>
-                <FaEdit className=" text-blue-900  text-2xl"/>
-                
               </button>
             </li>
           ))}
