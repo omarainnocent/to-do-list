@@ -11,7 +11,7 @@ export default function App() {
   const [newTodo, setNewTodo] = useState<string>('');
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
-
+  const [adding, setAdding] = useState(false)
 
   useEffect(() => {
     
@@ -63,6 +63,29 @@ export default function App() {
   }
 
 
+//Adding todos//
+const addTodo = async (taskId: number) => {
+  console.log('adding a task', taskId)
+  try {
+    setAdding(true)
+    const response = await fetch(`https://be-todo-app-xz0m.onrender.com/api/tasks`, {
+      method: 'POST'
+    })
+    console.log(response)
+    return response
+  } catch (error) {
+    console.error 
+  }
+  finally {
+    setAdding(false)
+  }
+}
+
+
+
+
+
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-600">
       <div className="w-full max-w-md md:h-scree bg-blue-950 p-8 rounded-xl shadow-black ">
@@ -79,7 +102,7 @@ export default function App() {
             placeholder="add a note...... !"
           />
           <button
-            // onClick={addTodo}
+            onClick={() => addTodo}
             className="px-4 py-2 text-4xl text-white rounded-full hover:bg-blue-900"
           >
             <IoIosAddCircle className="font-extrabold h-6" />
