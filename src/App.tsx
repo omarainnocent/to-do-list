@@ -2,57 +2,66 @@ import { IoIosAddCircle } from "react-icons/io";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 interface Todo {
-  _id: number;
+  _id?: number;
   title: string;
 }
 
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState<string>('');
-
-//get req//
-  const fetchAllData = async () => {
-    const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks/all');
-    if (response.status !== 200) {
-      throw new Error('can not fetch the data now');
-    }
-    const data = await response.json();
-    setTodos(data.tasks)
-  };
-
-  console.log(fetchAllData);
-
-  //post req//
-  const addTodo = async () => {
-    const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks/add');
-    if (response.status !== 200) {
-      throw new Error('can not fetch the data');
-    }
-    const data = await response.json();
-    setTodos(data.tasks)
-  };
-  console.log(addTodo);
-
-//Delete//
-const deleteTodo = async () => {
-  const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks/:id');
-  if (response.status !== 200) {
-    throw new Error('can the fetch data')
-  }
-  const data = await response.json();
-  setTodos(data.tasks)
-};
-console.log(deleteTodo);
+  const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
 
   useEffect(() => {
-    fetchAllData()
+    
+    fetchAllTasks()
   }, [])
 
+  // console.log('todos', todos)
+  const fetchAllTasks = async () => {
+    // console.log('fetching all tasks')
+    try {
+      setLoading(true)
+      const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks/all')
 
+      // console.log(response)
+      if (response.status === 200) {
+        const data = await response.json()
+        setTodos(data.tasks)
+        // console.log(data.tasks)
+      }
+    }
+    catch (error) {
+      console.error(error)
+    }
+    finally {
+      setLoading(false)
+    }
+  }
 
+  //deleting todo
+  const deleteTodo = async (taskId: number) => {
 
-  console.log('todos', todos)
+    console.log('Deleting a task', taskId)
+    try {
+      setDeleting(true)
+      const response = await fetch(`https://be-todo-app-xz0m.onrender.com/api/tasks/${taskId}`, {
+        method: 'DELETE'
+      })
+
+      console.log(response)
+
+      return response
+
+    } catch (error) {
+      console.error(error)
+    }
+    finally {
+      setDeleting(false)
+    }
+  }
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-600">
@@ -70,7 +79,7 @@ console.log(deleteTodo);
             placeholder="add a note...... !"
           />
           <button
-            onClick={addTodo}
+            // onClick={addTodo}
             className="px-4 py-2 text-4xl text-white rounded-full hover:bg-blue-900"
           >
             <IoIosAddCircle className="font-extrabold h-6" />
@@ -78,27 +87,59 @@ console.log(deleteTodo);
 
 
         </div>
+        {loading ? (
+          <div>
+            <p>Loading...</p>
+          </div>
+        ) : (
+          // <div className="flex flex-col items-start gap-5">
+          //   {todos.map(task => {
+          //     return(
+          //       <div key={task._id} className="flex flex-row gap-5 items-center justify-between">
+          //         <div>{task.title}</div>
+          //         <div className="">
+          //           <button 
+          //           className="bg-red-500 rounded-lg p-2"
+          //           onClick={() => handleDelete(task._id!)}
+          //           >
+          //             <FiDelete color="white" size={10} />
+          //           </button>
+          //         </div>
+          //       </div>
+          //     )
+          //   })}
+          // </div>
+          <ul className="space-y-4 md:flex-col-2">
+            {todos.map((todo) => (
+              <li
+                key={todo._id}
+                className={`flex justify-between items-center p-4 border rounded-full `}
+              >
+                <span
+                  className="flex-1 cursor-pointer text-white"
+                >
+                  {todo.title}
+                </span>
+                <button
+                  // onClick={deleteTodo(todo._id!)}
+                  onClick={() => deleteTodo(todo._id!)}
+                  className="ml-2 text-red-600 hover:text-red-900"
+                >
+                  {deleting ? (
+                    <div>
+                      <p className="text-white">processing</p>
+                    </div>
+                  ) : (
+                    <FaDeleteLeft className="text-red-600 hover:text-red-900 text-3xl" />
+                  )}
 
-        <ul className="space-y-4 md:flex-col-2">
-          {todos.map((todo) => (
-            <li
-              key={todo._id}
-              className={`flex justify-between items-center p-4 border rounded-full `}
-            >
-              <span
-                className="flex-1 cursor-pointer text-white"
-              >
-                {todo.title}
-              </span>
-              <button
-                onClick={deleteTodo}
-                className="ml-2 text-red-600 hover:text-red-900"
-              >
-                <FaDeleteLeft className="text-red-600 hover:text-red-900 text-3xl" />
-              </button>
-            </li>
-          ))}
-        </ul>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+
       </div>
     </div>
   );
