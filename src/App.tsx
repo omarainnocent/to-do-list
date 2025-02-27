@@ -14,7 +14,7 @@ export default function App() {
   const [adding, setAdding] = useState(false)
 
   useEffect(() => {
-    
+
     fetchAllTasks()
   }, [])
 
@@ -50,7 +50,8 @@ export default function App() {
         method: 'DELETE'
       })
 
-      console.log(response)
+      fetchAllTasks()
+      // console.log(response)
 
       return response
 
@@ -63,27 +64,51 @@ export default function App() {
   }
 
 
-//Adding todos//
-const addTodo = async (taskId: number) => {
-  console.log('adding a task', taskId)
-  try {
-    setAdding(true)
-    const response = await fetch(`https://be-todo-app-xz0m.onrender.com/api/tasks`, {
-      method: 'POST'
-    })
-    console.log(response)
-    return response
-  } catch (error) {
-    console.error 
-  }
-  finally {
-    setAdding(false)
-  }
-}
+  //Adding todos//
+  // const addTodo = async (taskId: number) => {
+  //   console.log('adding a task', taskId)
+  //   try {
+  //     setAdding(true)
+  //     const response = await fetch(`https://be-todo-app-xz0m.onrender.com/api/tasks`, {
+  //       method: 'POST'
+  //     })
+  //     console.log(response)
+  //     return response
+  //   } catch (error) {
+  //     console.error 
+  //   }
+  //   finally {
+  //     setAdding(false)
+  //   }
+  // };
 
 
 
+  const addTodo = async () => {
+    console.log('Adding a task', newTodo);
 
+    try {
+      setAdding(true);
+      const response = await fetch('https://be-todo-app-xz0m.onrender.com/api/tasks/add', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: newTodo
+        })
+      });
+
+      console.log(response);
+      fetchAllTasks()
+
+      return response;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAdding(false);
+    }
+  };
 
 
   return (
@@ -102,10 +127,12 @@ const addTodo = async (taskId: number) => {
             placeholder="add a note...... !"
           />
           <button
-            onClick={() => addTodo}
+            onClick={addTodo}
             className="px-4 py-2 text-4xl text-white rounded-full hover:bg-blue-900"
           >
-            <IoIosAddCircle className="font-extrabold h-6" />
+            {adding ? <p>processing</p> : (
+              <IoIosAddCircle className="font-extrabold h-6" />
+            )}
           </button>
 
 
