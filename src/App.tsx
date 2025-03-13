@@ -112,7 +112,7 @@ export default function App() {
 
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-600">
+    <div className="flex justify-center items-center min-h-screen bg-gray-200">
       <div className="w-full max-w-md md:h-scree bg-blue-950 p-8 rounded-xl shadow-black ">
         <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">Todo List</h1>
 
